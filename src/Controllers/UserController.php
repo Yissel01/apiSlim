@@ -28,11 +28,23 @@ class UserController extends Controller{
         $valid = $user->verifyCredentials();
         if($valid){
             $jwt = $this->generateToken($user->getID());
-            return $this->formatRespWithJson($response, ['token' => $jwt] );
+            return $this->formatRespWithJson($response, ['valid' => $valid, 'token' => $jwt] );
         }
-        return $this->formatRespWithJson($response, ['results' => $valid]);
+        return $this->formatRespWithJson($response, ['valid' => $valid]);
     }
 
+     //genera un jwt con tiempo de expiracion de 1 hora
+     public function generateToken($id){
+        $now = strtotime("now");
+        $payload = [
+            'exp' => $now + 3600,
+            'data' => $id,
+        ];
+        
+        return JWT::encode($payload, Model::$hashKey, 'HS256');
+    }
+
+    //actualmente en desuso porque se cierra la sesion desde el front borrando el token
     public function logout(Request $request,Response $response,$args){
         AuthMiddleware::logout();
         return $this->formatRespWithJson($response, ['results' => 'Sesión cerrada con éxito']);
@@ -88,14 +100,5 @@ class UserController extends Controller{
         // return $this->formatResponse($response);
     }
 
-    //genera un jwt con tiempo de expiracion de 1 hora
-    public function generateToken($id){
-        $now = strtotime("now");
-        $payload = [
-            'exp' => $now + 3600,
-            'data' => $id,
-        ];
-        
-        return JWT::encode($payload, Model::$hashKey, 'HS256');
-    }
+   
 }

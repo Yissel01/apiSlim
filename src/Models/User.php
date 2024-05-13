@@ -21,16 +21,15 @@ class User extends Model{
     public function getID(){
         return $this->id;
     }
+    
+    public function getUsername(){
+        return $this->username;
+    }
 
     public function verifyCredentials(){
 
         //variable de retorno, devuelve si el usuario existe o no
-        // $result = array(
-        //     "valid" => false,
-        //     "id" => null
-        // );
         $valid = false;
-$c=0;
         // consulta para obtener todos los usuarios con ese nombre
         $sql = 'SELECT id, pass FROM '. self::$table .' WHERE username = :username';
         $data = $this->pdo->prepare($sql);
@@ -45,15 +44,13 @@ $c=0;
         if (!empty($users)) {
             //lo recorre en busca de coincidencias en la contraseña
             foreach ($users as $user) {
-                $c++;
-                // si encuentra una coincidencia cambia el valor de valid y crea las variables de sesion id y username
+                // si encuentra una coincidencia cambia el valor de valid y le da el valor del id al atributo id de la clase
                 if(password_verify($this->pass, $user['pass'])){
                     $valid = true;
                     $this->id = $user['id'];
                 }
             }
         }
-
         //retorna la variable booleana valid
         return $valid;
     }
