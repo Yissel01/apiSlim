@@ -9,7 +9,7 @@ $app->group('/api', function(RouteCollectorProxy $group){
     $group->get('/find','App\Controllers\WebsiteController:findTag');
     $group->get('/website','App\Controllers\WebsiteController:getWebsitesTable')->add(AuthMiddleware::class);
     $group->get('/website_verification_codes','App\Controllers\WebsiteController:getVerificationCodes');
-    $group->get('/check_website','App\Controllers\WebsiteController:checkVerification');
+    $group->get('/check_website','App\Controllers\WebsiteController:checkVerificationCodes');
     $group->post('/verify_credencials','App\Controllers\UserController:verifyCredentials');
     $group->post('/a','App\Controllers\UserController:a');
 });

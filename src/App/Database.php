@@ -46,21 +46,7 @@ class Database
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (website_id) REFERENCES websites(id),
                 UNIQUE (user_id, website_id)
-            );
-
-            CREATE TABLE IF NOT EXISTS htmlverifications (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                code VARCHAR(255) NOT NULL UNIQUE,
-                user_website_id INT,
-                FOREIGN KEY (user_website_id) REFERENCES websites(id)
-            );
-            
-            CREATE TABLE IF NOT EXISTS metaverifications (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                tag VARCHAR(255) NOT NULL UNIQUE,
-                user_website_id INT,
-                FOREIGN KEY (user_website_id) REFERENCES websites(id)
-            )' 
+            );' 
         );
         
         $num = $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -82,22 +68,6 @@ class Database
                 $url = "http://www.example" . $i . ".com";
                 $insert = $pdo->prepare("INSERT INTO websites (url) VALUES (:url)");
                 $insert->execute([':url' => $url]);
-                
-                // INSERT para la tabla 'htmlverifications'
-                $code = "<html><head><title>Random HTML Code $i</title></head><body></body></html>";
-                $insert = $pdo->prepare("INSERT INTO htmlverifications (code, user_website_id) VALUES (:code, :user_website_id)");
-                $insert->execute([
-                    ':code' => $code,
-                    ':user_website_id' => $i
-                ]);
-
-                // INSERT para la tabla 'metaverifications' 
-                $tag = "<meta name=\"SeoWebMasVerification\" content=\"Random meta tag $i\">";
-                $insert = $pdo->prepare("INSERT INTO metaverifications (tag, user_website_id) VALUES (:tag, :user_website_id)");
-                $insert->execute([
-                    ':tag' => $tag,
-                    ':user_website_id' => $i
-                ]);
 
                 // INSERT para la tabla 'user_websites'
                 $insert = $pdo->prepare("INSERT INTO user_websites (user_id, website_id) VALUES (:user_id, :website_id)");

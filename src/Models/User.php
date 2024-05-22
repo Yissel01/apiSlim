@@ -28,8 +28,9 @@ class User extends Model{
 
     public function verifyCredentials(){
 
-        //variable de retorno, devuelve si el usuario existe o no
-        $valid = false;
+        //variable de retorno, devuelve si el usuario existe o no y en caso de que exista devuelve tambien el jwt
+        $result['valid'] = false;
+        $result['jwt'] = null;
         // consulta para obtener todos los usuarios con ese nombre
         $sql = 'SELECT id, pass FROM '. self::$table .' WHERE username = :username';
         $data = $this->pdo->prepare($sql);
@@ -46,13 +47,24 @@ class User extends Model{
             foreach ($users as $user) {
                 // si encuentra una coincidencia cambia el valor de valid y le da el valor del id al atributo id de la clase
                 if(password_verify($this->pass, $user['pass'])){
-                    $valid = true;
-                    $this->id = $user['id'];
+                    $result['valid'] = true;
+                    $result['jwt'] = $this->generateToken($user['id']);
                 }
             }
         }
-        //retorna la variable booleana valid
-        return $valid;
+        
+        return $result;
+    }
+
+     //genera un jwt con tiempo de expiracion de 1 hora
+     public function generateToken($id){
+        $now = strtotime("now");
+        $payload = [
+            'exp' => $now + 3600,
+            'data' => $id,
+        ];
+        
+        return JWT::encode($payload, Model::$hashKey, 'HS256');
     }
 
 }

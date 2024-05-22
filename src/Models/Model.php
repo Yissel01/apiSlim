@@ -14,6 +14,10 @@ class Model{
         $this->pdo = Database::connect();
     }
 
+    public function setPdo($pdo){
+        $this->pdo = $pdo;
+    }
+
     public function getAll(){
         return  $this->pdo->query("SELECT * FROM ".self::$table);
     }
