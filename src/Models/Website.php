@@ -10,6 +10,7 @@ class Website extends Model{
     public static $table = 'websites';
     private $uwT = 'user_websites'; //nombre de la tabla de usuarios con sus sitios web
 
+    // Obtiene la lista de sitios web correspondientes al usuario autenticado
     public function getWebsitesTable($userID){
  
         $sql= 'SELECT ROW_NUMBER() 
@@ -23,6 +24,7 @@ class Website extends Model{
         return $this->pdo->query($sql);
     }
 
+    // Dado el id de user_website se obtienen los codigos para la verificacion de propiedad tanto meta como html para ese sitio con ese usuario
     public function getCodes($uwID){ //recibe el id de la tabla de usuarios con sus sitios web
         $sql= 'SELECT user_id, website_id FROM '.$this->uwT. ' WHERE id = '. $uwID ;
         $query = $this->pdo->query($sql); 
@@ -34,6 +36,9 @@ class Website extends Model{
         return $code;
     }
 
+    //Obtiene los codigos para la verificacion de propiedad de ese sitio para ese usuario mediante el metodo getCodes
+    //luego mediante isMetaMatch y isHTMLMatch verifica si estos codigos coinciden con los del sitio web a verificar en caso de que existan
+    //devuelve dos valores booleanos en un array que definen si coinciden o no los valores de verificacion
     public function verifyCodes($url ,$uwID){
         $code = $this->getCodes($uwID);
         $match['meta'] = $this->isMetaMatch($url , $code['meta']);
@@ -41,6 +46,9 @@ class Website extends Model{
         return $match;
     }
 
+    //obtiene el contenido de la pagina que este en la variable url
+    //revisa las etiquetas meta de dicha pagina y se queda solo con las que tienen name = seowebmas-verification
+    //ve si el content de alguna de estas etiquetas coincide con el codigo de verificacion correspondiente 
     public function isMetaMatch($url, $metaContent){
         $match = false;
         $ch = curl_init($url);
@@ -66,6 +74,7 @@ class Website extends Model{
         return $match;
     }
 
+    //a partir de la url dada accede a url/nombre_del_archivo_dado.html en caso de que exista y verifica si su contenido es valido
     public function isHTMLMatch($url, $htmlContent){
         $match = false;
         $toCompare = 'seowebmas-verification: seowebmas'. $htmlContent;

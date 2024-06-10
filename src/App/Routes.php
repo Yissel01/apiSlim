@@ -11,6 +11,5 @@ $app->group('/api', function(RouteCollectorProxy $group){
     $group->get('/website_verification_codes','App\Controllers\WebsiteController:getVerificationCodes');
     $group->get('/check_website','App\Controllers\WebsiteController:checkVerificationCodes');
     $group->post('/verify_credencials','App\Controllers\UserController:verifyCredentials');
-    $group->post('/a','App\Controllers\UserController:a');
 });
 
